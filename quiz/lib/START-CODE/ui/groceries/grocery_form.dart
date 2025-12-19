@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:quiz/START-CODE/data/mock_grocery_repository.dart';
 
 import '../../models/grocery.dart';
 
@@ -12,7 +14,6 @@ class NewItem extends StatefulWidget {
 }
 
 class _NewItemState extends State<NewItem> {
-
   // Default settings
   static const defautName = "New grocery";
   static const defaultQuantity = 1;
@@ -43,10 +44,28 @@ class _NewItemState extends State<NewItem> {
 
   void onReset() {
     // Will be implemented later - Reset all fields to the initial values
+    setState(() {
+      _nameController.text = defautName;
+      _quantityController.text = defaultQuantity.toString();
+      _selectedCategory = defaultCategory;
+    });
   }
 
   void onAdd() {
     // Will be implemented later - Create and return the new grocery
+    final String id = '';
+    final name = _nameController.text;
+    final quantity = int.tryParse(_quantityController.text) ?? defaultQuantity;
+    
+
+    final newItem = Grocery(
+      id: id,
+      name: name,
+      quantity: quantity,
+      category: _selectedCategory,
+    );
+    
+    Navigator.pop(context, newItem);
   }
 
   @override
@@ -76,7 +95,18 @@ class _NewItemState extends State<NewItem> {
                 Expanded(
                   child: DropdownButtonFormField<GroceryCategory>(
                     initialValue: _selectedCategory,
-                    items: [  ],
+                    items: GroceryCategory.values.map((c) {
+                      return DropdownMenuItem(
+                        value: c,
+                        child: Row(
+                          children: [
+                            Container(height: 15, width: 15, color: c.color),
+                            SizedBox(width: 10),
+                            Text(c.name),
+                          ],
+                        ),
+                      );
+                    }).toList(),
                     onChanged: (value) {
                       if (value != null) {
                         setState(() {
@@ -93,10 +123,7 @@ class _NewItemState extends State<NewItem> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(onPressed: onReset, child: const Text('Reset')),
-                ElevatedButton(
-                  onPressed: onAdd,
-                  child: const Text('Add Item'),
-                ),
+                ElevatedButton(onPressed: onAdd, child: const Text('Add Item')),
               ],
             ),
           ],
